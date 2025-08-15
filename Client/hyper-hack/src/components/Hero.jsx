@@ -1,4 +1,7 @@
+import { useNavigate } from "react-router-dom";
+
 const Hero = () => {
+  const navigate = useNavigate();
   return (
     <div className="w-full h-screen text-white bg-[#0f1724]">
       <div className="w-[95%] mx-auto md:w-[92%] pt-14 md:pt-20 flex flex-col md:flex-row items-center justify-between">
@@ -11,7 +14,10 @@ const Hero = () => {
             Form a guild, coordinate strategies, and share long-term rewards
           </p>
           <div className="flex items-center gap-9 mt-11">
-            <button className="bg-[#5b8eff] text-white rounded-lg py-1.5 px-4">
+            <button
+              className="bg-[#5b8eff] text-white rounded-lg cursor-pointer py-1.5 px-4"
+              onClick={() => navigate("/dashboard")}
+            >
               Join a guild
             </button>
             <button className="border border-[#0e1a2a] text-white rounded-lg py-1.5 px-4 shadow">
@@ -19,9 +25,7 @@ const Hero = () => {
             </button>
           </div>
         </div>
-        <div className="">
-          <img src="" alt="" />
-        </div>
+        <div className="">{/* <img src="" alt="" /> */}</div>
       </div>
     </div>
   );
