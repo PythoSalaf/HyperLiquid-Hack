@@ -1,0 +1,388 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+contract HyperHackContract {
+
+    struct Guild {
+        address owner;
+        uint256 createdAt;
+        uint256 entryThreshold;
+        uint256 memberCap;
+        bool capped;
+        address[] members;
+        uint[] memberStakes;
+        uint256 pool;
+        uint16 risk_threshold;
+    }
+
+    struct TradeProposal {
+        bytes32 guildId;
+        bytes4 proposalId;
+        address trader;
+        uint256 amount;
+        string descript;
+        uint8 yesVotes;
+        uint8 totalVotes;
+        address[] voters;
+        bool approved;
+        bool executed;
+        bool fulfilled;
+    }
+
+    bytes32[] public guildIds;
+     
+    mapping(bytes32 => Guild) public guilds;
+    uint256 public guildCount;
+    TradeProposal[] public guildProposals;
+
+    mapping(uint256 => uint256[]) public guildTradeIds; // to track proposals per guild
+
+    event GuildCreated(bytes32 guildId, address owner);
+    event JoinedGuild(bytes32 guildId, address member);
+    event TradeProposed(bytes32 guildId, address trader, uint256 amount);
+    event Voted(bytes32 guildId, address voter);
+    event TradeExecuted(bytes32 guildId, address trader, uint256 profit);
+
+    function util_isMember(bytes32 GuildId, address user)private view returns(bool) {
+           
+            address[] memory _members = guilds[GuildId].members;
+
+            for(uint8 c; c < _members.length; c++) {
+                if(_members[c] == user) return true;
+            }
+
+        return false;
+    }
+    
+       function util_abs(int256 x) internal returns(uint){
+        return uint(x >= 0 ? x : -x);
+    }
+
+    function createGuild(uint256 entryThreshold, uint256 memberCap, uint16 _riskThreshold) external payable {
+        require(entryThreshold <= msg.value,"Deposit Entry Threshold");
+        
+        bytes32 GuildId = keccak256(abi.encode(msg.sender, guildCount));
+
+        guildIds.push(GuildId);
+
+        guilds[GuildId] = Guild({
+            owner: msg.sender, 
+            createdAt: block.timestamp, 
+            entryThreshold: entryThreshold, 
+            memberCap: memberCap,
+            capped: false,
+            members: new address[](0),
+            memberStakes: new uint[](0),
+            pool: msg.value,
+            risk_threshold: _riskThreshold
+        });
+
+        guilds[GuildId].members.push(msg.sender);
+        guilds[GuildId].memberStakes.push(msg.value);
+   
+        emit GuildCreated(GuildId, msg.sender);
+        guildCount++;
+    }
+
+
+    function topUpStake(bytes32 guildId) external payable {
+    require(msg.value > 0, "Send valid amount");
+    require(util_isMember(guildId, msg.sender), "Not a guild member");
+
+    uint256 memberIndex;
+
+    for (uint256 i = 0; i < guilds[guildId].members.length; i++) {
+        if (guilds[guildId].members[i] == msg.sender) {
+            memberIndex = i;
+            break;
+        }
+    }
+    guilds[guildId].memberStakes[memberIndex] += msg.value;
+    guilds[guildId].pool += msg.value;
+    }
+
+
+    function joinGuild(bytes32 GuildId, uint256 entryThreshold) external payable {
+        require(!guilds[GuildId].capped,"Guild cap reached");
+        require(!util_isMember(GuildId, msg.sender),"Already a member");
+        require(msg.value >= entryThreshold,"Deposit Entry Threshold");
+
+        guilds[GuildId].members.push(msg.sender);
+        guilds[GuildId].memberStakes.push(msg.value);
+        guilds[GuildId].pool += msg.value;
+
+        if (guilds[GuildId].members.length == guilds[GuildId].memberCap) {
+            guilds[GuildId].capped = true;}
+        
+        emit JoinedGuild(GuildId, msg.sender);
+    }
+
+    function proposeTrade(bytes32 _guildId, uint256 amount, string memory description) external {
+         require(util_isMember(_guildId, msg.sender),"Not a member");
+         uint256 riskThreshold = (guilds[_guildId].risk_threshold*guilds[_guildId].pool)/100;
+         require(amount <= riskThreshold,"Risk_Scale too high");
+
+         bytes4 propId = bytes4(keccak256(abi.encode(_guildId,msg.sender,block.timestamp)));
+         
+         guildProposals.push(TradeProposal({
+               guildId: _guildId,
+               proposalId:propId,
+               trader: msg.sender,
+               amount: amount,
+               descript: description, 
+               yesVotes: 0,
+               totalVotes: 0,
+               voters: new address[](0),
+               approved: false,
+               executed: false,
+               fulfilled: false
+         }));
+
+        emit TradeProposed(_guildId, msg.sender, amount);
+    }
+
+    function voteProposal(bytes32 _guildId, bytes4 _proposalId, bool _voteYes) external {
+        require(util_isMember(_guildId, msg.sender),"Not a member");
+        uint8 index;
+        bool active;
+
+        for(uint8 c = 0; c < guildProposals.length; c++){
+                if(guildProposals[c].proposalId == _proposalId) {
+                    index = c;
+                    active =  true;
+                }
+        }
+
+        require(active,"Enter correct ProposalId");
+
+        for (uint8 c = 0; c < guildProposals[index].voters.length; c++){
+            if(msg.sender == guildProposals[index].voters[c]) {
+                revert("Already voted");
+                }
+         }
+
+        if (_voteYes) {
+            guildProposals[index].yesVotes++;
+            guildProposals[index].totalVotes++;
+            guildProposals[index].voters.push(msg.sender);
+        } else {
+            guildProposals[index].totalVotes++;
+            guildProposals[index].voters.push(msg.sender);
+        }
+
+        if(guilds[_guildId].members.length == 2){
+            if(guildProposals[index].yesVotes == 2){
+                guildProposals[index].approved = true;
+            }
+        }else if(guilds[_guildId].members.length > 2){
+           if((guildProposals[index].totalVotes >  (guilds[_guildId].members.length)/2) && 
+                guildProposals[index].yesVotes > (guildProposals[index].totalVotes)/2){ 
+                   
+                    guildProposals[index].approved = true;
+           }
+        }
+
+        emit Voted(_guildId, msg.sender);
+    }
+
+    function executeProposal(bytes4 _proposalId) external {
+        uint256 index;
+        bool found;
+
+        for (uint256 i = 0; i < guildProposals.length; i++) {
+            if (guildProposals[i].proposalId == _proposalId) {
+            index = i;
+            found = true;
+            break;
+            }
+        }
+
+        require(found, "Enter correct Proposal ID");
+        require(guildProposals[index].approved, "Proposal not approved yet");
+        require(!guildProposals[index].executed, "Proposal already executed");
+        require(msg.sender == guildProposals[index].trader, "Unauthorised account");
+        require(guilds[guildProposals[index].guildId].pool >= guildProposals[index].amount, "Current pool amount is insufficient");
+
+    
+        (bool sent, ) = payable(msg.sender).call{value: guildProposals[index].amount}("");
+        require(sent, "Failed to send Ether");
+    
+        guildProposals[index].executed = true;
+        guilds[guildProposals[index].guildId].pool -= guildProposals[index].amount;
+
+        emit TradeExecuted(guildProposals[index].guildId, msg.sender, guildProposals[index].amount);
+    }
+
+    function returnTradeFunds(bytes4 _proposalId) external payable{
+
+        uint16 index;
+        bool found;
+
+         for (uint16 i = 0; i < guildProposals.length; i++) {
+            if (guildProposals[i].proposalId == _proposalId) {
+                index = i;
+                found = true;
+                break;
+            }
+        }
+        
+        require(found, "Enter correct Proposal ID");
+        
+        uint256 totalStake;
+        uint256[] memory stakes = guilds[guildProposals[index].guildId].memberStakes;
+        address[] memory members = guilds[guildProposals[index].guildId].members;
+
+
+        for (uint256 i = 0; i < stakes.length; i++) {
+            totalStake += stakes[i];
+        }
+        
+        require(guildProposals[index].executed, "Proposal not executed yet");
+        require(msg.sender == guildProposals[index].trader, "Only trader can return funds");
+        require(!guildProposals[index].fulfilled, "Proposal already fulfilled");
+
+        uint256 Principal = guildProposals[index].amount;
+        int256 Margin = int256(msg.value) - int256(Principal);
+
+        guilds[guildProposals[index].guildId].pool += Principal;
+
+        if (Margin > 0) {
+        
+            uint256 vestingAmount = (uint(Margin) * 40) / 100;
+            // (bool sentVesting, ) = payable(vestingContract).call{value: vestingAmount}("");
+            // require(sentVesting, "Failed to send to vesting contract");
+
+            uint256 distributableProfit = uint(Margin) - vestingAmount;
+
+            //Traders profit
+            uint256 traderShare = (distributableProfit * 40) / 100;
+            (bool sentTrader,) = (guildProposals[index].trader).call{value:traderShare}("");
+            require(sentTrader, "Failed to send trader share");
+
+            //Guild's Profit
+            uint256 memberSharePool = distributableProfit - traderShare;
+
+        for (uint256 i = 0; i < members.length; i++) {
+            uint256 memberReward = 0;
+
+            if (totalStake > 0) {
+                memberReward = (memberSharePool * stakes[i]) / totalStake;
+            }
+            
+            if (memberReward > 0) {
+                (bool sentMember, ) = payable(members[i]).call{value: memberReward}("");
+                require(sentMember, "Failed to send member reward");
+                    }
+                }
+            } else if (Margin < 0) {
+
+                 uint256 tradersLoss = (util_abs(Margin) * 40) / 100;
+
+                uint256 distributableLoss = util_abs(Margin) - tradersLoss;
+
+
+            for(uint16 c = 0; c < guilds[guildProposals[index].guildId].members.length; c++){
+                if(guilds[guildProposals[index].guildId].members[c] == msg.sender){
+                    guilds[guildProposals[index].guildId].memberStakes[c] -= tradersLoss;
+                }
+            }
+          
+
+        for (uint256 i = 0; i < members.length; i++) {
+            uint256 memberLoss = 0;
+
+            if (totalStake > 0) {
+                memberLoss = (distributableLoss * stakes[i]) / totalStake;
+            }
+            
+            if (memberLoss > 0) {
+                
+               guilds[guildProposals[index].guildId].memberStakes[i] -= memberLoss;
+                    
+                    }
+            }
+                
+            }
+
+            guilds[guildProposals[index].guildId].pool -= util_abs(Margin);
+
+            guildProposals[index].fulfilled = true;
+        }
+
+
+    function withdrawStake(bytes32 guildId) external {
+        uint memberStake;
+        uint amountToWithdraw;
+
+        require(util_isMember(guildId, msg.sender), "Not a guild member");
+
+        for (uint256 i = 0; i < guildProposals.length; i++) {
+
+            if (guildProposals[i].guildId == guildId && guildProposals[i].trader == msg.sender) {
+            require(guildProposals[i].executed && guildProposals[i].fulfilled, "Cannot leave with unfulfilled proposal");
+            }
+        }
+
+
+        for (uint16 i = 0; i < guilds[guildId].members.length; i++) {
+             if (guilds[guildId].members[i] == msg.sender) {
+                memberStake = guilds[guildId].memberStakes[i];
+                amountToWithdraw = (memberStake * 95) / 100;
+
+                        for(uint16 cc = i; cc < guilds[guildId].members.length-1; cc++ ){
+                           guilds[guildId].members[cc] = guilds[guildId].members[cc+1];
+                           guilds[guildId].memberStakes[cc] = guilds[guildId].memberStakes[cc+1];
+                            if(cc == guilds[guildId].members.length-2){
+                               guilds[guildId].members[cc+1];
+                               guilds[guildId].members.pop();
+                               guilds[guildId].memberStakes[cc+1];
+                               guilds[guildId].memberStakes.pop();
+                               break;
+                            }
+                        } 
+             }
+         }
+   
+    uint256 stakeLeft = memberStake - amountToWithdraw;
+
+    require(guilds[guildId].pool >= amountToWithdraw, "Guild pool insufficient");
+
+    (bool sent, ) = payable(msg.sender).call{value: amountToWithdraw}("");
+    require(sent, "Failed to send Ether");
+
+    guilds[guildId].pool -= amountToWithdraw;
+    
+    uint distributeStakeLeft = stakeLeft/guilds[guildId].members.length; 
+
+    for(uint16 i = 0; i < guilds[guildId].members.length; i++) {
+        guilds[guildId].memberStakes[i] += distributeStakeLeft;
+    }
+
+    }
+
+
+    //Read Functions
+    function GuildIds () external view returns(bytes32[] memory){
+        return guildIds;
+    }
+
+    function GuildData(bytes32 _GuildId) external view returns(Guild memory, TradeProposal[] memory) {
+        uint16 count;
+        uint16 incrementer;
+
+        for(uint16 c = 0; c < guildProposals.length; c++){
+                if(guildProposals[c].guildId == _GuildId) count++;
+        }
+
+        TradeProposal[] memory thisGuildsProposals = new TradeProposal[](count);
+
+        for(uint16 c = 0; c < guildProposals.length; c++){
+                if(guildProposals[c].guildId == _GuildId) {
+                    thisGuildsProposals[incrementer] = guildProposals[c];
+                    incrementer++;
+                }
+        }
+        return (guilds[_GuildId],thisGuildsProposals);
+    }
+
+}
