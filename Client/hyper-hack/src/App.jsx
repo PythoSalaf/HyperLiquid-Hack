@@ -1,5 +1,11 @@
 import { Routes, Route } from "react-router-dom";
-import { DashboardLayout, LandingLayout, Dashboard } from "./pages";
+import {
+  DashboardLayout,
+  LandingLayout,
+  Dashboard,
+  Guild,
+  Leaderboards,
+} from "./pages";
 
 function App() {
   return (
@@ -8,6 +14,8 @@ function App() {
         <Route path="/" element={<LandingLayout />} />
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
+          <Route path="/dashboard/guilds" element={<Guild />} />
+          <Route path="/dashboard/leaderboards" element={<Leaderboards />} />
         </Route>
       </Routes>
     </>
