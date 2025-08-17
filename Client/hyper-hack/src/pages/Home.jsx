@@ -46,7 +46,7 @@ const Home = () => {
             const Guild = await publicClient.readContract({
               address:contractAddress,
               abi:contractABI,
-              functionName:"Guilds",
+              functionName:"GuildData",
               args:[guildIds[i]]
             })
 
