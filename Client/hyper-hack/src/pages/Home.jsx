@@ -3,6 +3,7 @@ import { contractABI,contractAddress } from "../components/contractConfig";
 import {createPublicClient, http} from 'viem'
 import {sepolia} from 'viem/chains'
 import {useState, useEffect} from 'react'
+import {useWallets} from '@privy-io/react-auth';
 
 const publicClient = createPublicClient({
   chain:sepolia,
@@ -12,11 +13,31 @@ const publicClient = createPublicClient({
 const Home = () => {
 
   const [guildIds, setGuildIds] =  useState([])
-  const [GuildsArray, setGuilds] = useState()
+  const [GuildsArray, setGuilds] = useState([])
+  const [accounts, setAccounts] = useState();
+
+  const {ready:ReadyWallet,wallets:ConnectedWallets} = useWallets();
+  
+
+
+    useEffect(()=>{
+  
+      if(ReadyWallet){
+        console.log("These are the wallets", ConnectedWallets);
+
+        setAccounts(ConnectedWallets[0])
+
+        // console.log("This is the account connected",accounts)
+       
+
+      }
+  
+    },[ReadyWallet])
+    
 
     useEffect(()=>{
 
-        const guildIIDFuction = async () => {
+        const guildIIDFunction = async () => {
 
             const Guild_IDS = await publicClient.readContract({
               address:contractAddress,
@@ -27,17 +48,16 @@ const Home = () => {
 
             setGuildIds(Guild_IDS)
 
-            console.log("The Ids",Guild_IDS," The State" ,guildIds)
-            
         }
 
-        guildIIDFuction()
+        guildIIDFunction()
+        // console.log("The Ids (State)",guildIds)
 
     },[])
 
     useEffect(()=>{
 
-        const Guilds = async () => {
+        const GuildsInfo = async () => {
 
             let Guilds_Created = [];
 
@@ -52,15 +72,16 @@ const Home = () => {
 
             Guilds_Created.push(Guild)
 
-            console.log("The Guild",Guild)
+            // console.log("The Guild",Guild, '\n Pushed:', Guilds_Created)
           }
 
-          setGuilds(Guilds_Created)
-          console.log("The Guilds",GuildsArray)
+          setGuilds(()=>Guilds_Created)
           
         }
 
-        Guilds()
+        GuildsInfo()
+
+        // console.log("The Guilds Array (State)",GuildsArray)
 
     },[guildIds])
 
