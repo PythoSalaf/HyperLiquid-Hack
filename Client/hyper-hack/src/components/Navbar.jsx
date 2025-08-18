@@ -12,7 +12,7 @@ const Navbar = () => {
 
     //wallets is an array of objects that defines all the connected accounts to the site. [After I connect my wallet, I request for the
     // array to get me the address I just connected]
-    const {wallets: readyWallets} = useWallets();
+    const {ready:walletsRead, wallets: readyWallets} = useWallets();
     const {login, logout, ready, authenticated} = usePrivy();
 
     useEffect(
@@ -22,7 +22,8 @@ const Navbar = () => {
         if(ready && authenticated){
           console.log("Fully Loaded")
       // Here Im setting that address to a state variable. You can pick it from here and put it in your contextAPI
-          setAccounts(readyWallets[0].address)
+          if(walletsRead && readyWallets.length > 0)
+            {setAccounts(readyWallets[0].address)}
         }
 
         console.log("We are Loaded")

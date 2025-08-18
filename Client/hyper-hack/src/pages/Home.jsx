@@ -27,7 +27,7 @@ const Home = () => {
 
         setAccounts(ConnectedWallets[0])
 
-        // console.log("This is the account connected",accounts)
+        console.log("This is the account connected",accounts)
        
 
       }
@@ -43,7 +43,6 @@ const Home = () => {
               address:contractAddress,
               abi:contractABI,
               functionName:"GuildIds"
-
             })
 
             setGuildIds(Guild_IDS)
@@ -51,7 +50,7 @@ const Home = () => {
         }
 
         guildIIDFunction()
-        // console.log("The Ids (State)",guildIds)
+        console.log("The Ids (State)",guildIds)
 
     },[])
 
@@ -72,7 +71,7 @@ const Home = () => {
 
             Guilds_Created.push(Guild)
 
-            // console.log("The Guild",Guild, '\n Pushed:', Guilds_Created)
+            console.log("The Guild",Guild, '\n Pushed:', Guilds_Created)
           }
 
           setGuilds(()=>Guilds_Created)
@@ -81,7 +80,7 @@ const Home = () => {
 
         GuildsInfo()
 
-        // console.log("The Guilds Array (State)",GuildsArray)
+        console.log("The Guilds Array (State)",GuildsArray)
 
     },[guildIds])
 
