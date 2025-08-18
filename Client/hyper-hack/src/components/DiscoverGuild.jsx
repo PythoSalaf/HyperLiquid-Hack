@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import GridCard from "./GridCard";
+import { guildsData } from "./Dummy";
 
 const DiscoverGuild = () => {
   const navigate = useNavigate();
@@ -16,9 +17,9 @@ const DiscoverGuild = () => {
           </button>
         </div>
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          <GridCard />
-          <GridCard />
-          <GridCard />
+          {guildsData.slice(0, 3).map((item) => (
+            <GridCard key={item.id} {...item} />
+          ))}
         </div>
       </div>
     </div>

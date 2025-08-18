@@ -10,4 +10,5 @@ export { default as GuildPerformance } from "./GuildPerformance";
 export { default as DiscoverGuild } from "./DiscoverGuild";
 export { default as Topbar } from "./Topbar";
 export { default as GridCard } from "./GridCard";
+export { default as Chat } from "./Chat";
 export { default as LeaderboardComp } from "./LeaderboardComp";

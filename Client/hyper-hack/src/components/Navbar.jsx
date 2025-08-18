@@ -14,7 +14,7 @@ const Navbar = () => {
         </div>
         <div className="">
           <button className="hidden md:block bg-[#5b8eff] text-white px-3 py-1.5 rounded-lg">
-            Join a Guild
+            Login/Signin
           </button>
           <div className="block md:hidden">
             <MdMenu className="size-6" />

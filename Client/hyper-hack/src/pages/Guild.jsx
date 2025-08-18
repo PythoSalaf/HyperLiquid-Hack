@@ -1,5 +1,5 @@
 import { GridCard } from "../components";
-import { leaderDummy } from "../components/Dummy";
+import { guildsData, leaderDummy } from "../components/Dummy";
 
 const Guild = () => {
   return (
@@ -65,9 +65,9 @@ const Guild = () => {
               </div>
             </div>
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              <GridCard />
-              <GridCard />
-              <GridCard />
+              {guildsData.slice(0, 3).map((item) => (
+                <GridCard key={item.id} {...item} />
+              ))}
             </div>
           </div>
 
@@ -122,11 +122,12 @@ const Guild = () => {
                           {data.volume}
                         </td>
                         <td className="py-2 text-sm md:text-base px-3 font-semibold ">
-                          <div
+                          <button
                             className={`rounded-3xl py-1 bg-[#6d8cff] text-[#081423]`}
+                            onClick={() => {}}
                           >
                             view
-                          </div>
+                          </button>
                         </td>
                       </tr>
                     ))}

@@ -5,6 +5,7 @@ import {
   Dashboard,
   Guild,
   Leaderboards,
+  GuildDetails,
 } from "./pages";
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="/dashboard/guilds" element={<Guild />} />
+          <Route path="/dashboard/guilds/:id" element={<GuildDetails />} />
           <Route path="/dashboard/leaderboards" element={<Leaderboards />} />
         </Route>
       </Routes>
