@@ -1,16 +1,31 @@
 //This is Sepolia Testnet
-export const contractAddress = "0x0474b473a1c7bcf9a5706e71e894033157e85248"
+export const contractAddress = "0x43b58666Af4F45DBa433fb19ad6f032bc209eEE5"
  export const contractABI = [
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "entryThreshold",
-				"type": "uint256"
+				"internalType": "string",
+				"name": "_creatorName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_guildName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_description",
+				"type": "string"
 			},
 			{
 				"internalType": "uint256",
 				"name": "memberCap",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "entryThreshold",
 				"type": "uint256"
 			},
 			{
@@ -83,9 +98,9 @@ export const contractAddress = "0x0474b473a1c7bcf9a5706e71e894033157e85248"
 				"type": "bytes32"
 			},
 			{
-				"internalType": "uint256",
-				"name": "entryThreshold",
-				"type": "uint256"
+				"internalType": "string",
+				"name": "_memberName",
+				"type": "string"
 			}
 		],
 		"name": "joinGuild",
@@ -274,8 +289,23 @@ export const contractAddress = "0x0474b473a1c7bcf9a5706e71e894033157e85248"
 				"components": [
 					{
 						"internalType": "address",
-						"name": "owner",
+						"name": "ownerAddress",
 						"type": "address"
+					},
+					{
+						"internalType": "string",
+						"name": "ownerName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "guildName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "descript",
+						"type": "string"
 					},
 					{
 						"internalType": "uint256",
@@ -298,8 +328,13 @@ export const contractAddress = "0x0474b473a1c7bcf9a5706e71e894033157e85248"
 						"type": "bool"
 					},
 					{
+						"internalType": "string[]",
+						"name": "memberNames",
+						"type": "string[]"
+					},
+					{
 						"internalType": "address[]",
-						"name": "members",
+						"name": "memberAddresses",
 						"type": "address[]"
 					},
 					{
@@ -496,8 +531,23 @@ export const contractAddress = "0x0474b473a1c7bcf9a5706e71e894033157e85248"
 		"outputs": [
 			{
 				"internalType": "address",
-				"name": "owner",
+				"name": "ownerAddress",
 				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "ownerName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "guildName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "descript",
+				"type": "string"
 			},
 			{
 				"internalType": "uint256",

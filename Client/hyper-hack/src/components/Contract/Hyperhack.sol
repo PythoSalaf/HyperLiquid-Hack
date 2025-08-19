@@ -3,13 +3,18 @@ pragma solidity ^0.8.19;
 
 contract HyperHackContract {
 
-    struct Guild {
-        address owner;
+    
+     struct Guild {
+        address ownerAddress;
+        string ownerName;
+        string  guildName;
+        string descript;
         uint256 createdAt;
         uint256 entryThreshold;
         uint256 memberCap;
         bool capped;
-        address[] members;
+        string[] memberNames;
+        address[] memberAddresses;
         uint[] memberStakes;
         uint256 pool;
         uint16 risk_threshold;
@@ -35,7 +40,7 @@ contract HyperHackContract {
     uint256 public guildCount;
     TradeProposal[] public guildProposals;
 
-    mapping(uint256 => uint256[]) public guildTradeIds; // to track proposals per guild
+    mapping(uint256 => uint256[]) public guildTradeIds; 
 
     event GuildCreated(bytes32 guildId, address owner);
     event JoinedGuild(bytes32 guildId, address member);
@@ -45,7 +50,7 @@ contract HyperHackContract {
 
     function util_isMember(bytes32 GuildId, address user)private view returns(bool) {
            
-            address[] memory _members = guilds[GuildId].members;
+            address[] memory _members = guilds[GuildId].memberAddresses;
 
             for(uint8 c; c < _members.length; c++) {
                 if(_members[c] == user) return true;
@@ -54,30 +59,44 @@ contract HyperHackContract {
         return false;
     }
     
-       function util_abs(int256 x) internal returns(uint){
+       function util_abs(int256 x) internal pure returns(uint){
         return uint(x >= 0 ? x : -x);
     }
 
-    function createGuild(uint256 entryThreshold, uint256 memberCap, uint16 _riskThreshold) external payable {
-        require(entryThreshold <= msg.value,"Deposit Entry Threshold");
+    function createGuild(
+        string memory _creatorName, 
+        string memory _guildName,
+        string memory _description,
+        uint256 memberCap, 
+        uint256 entryThreshold,
+        uint16 _riskThreshold
+
+        ) external payable {
         
+        require(entryThreshold <= msg.value,"Deposit Entry Threshold");
+               
         bytes32 GuildId = keccak256(abi.encode(msg.sender, guildCount));
 
         guildIds.push(GuildId);
 
         guilds[GuildId] = Guild({
-            owner: msg.sender, 
+            ownerAddress: msg.sender, 
+            ownerName: _creatorName,
+            guildName: _guildName,
+            descript: _description,
             createdAt: block.timestamp, 
             entryThreshold: entryThreshold, 
             memberCap: memberCap,
             capped: false,
-            members: new address[](0),
+            memberNames: new string[](0),
+            memberAddresses: new address[](0),
             memberStakes: new uint[](0),
             pool: msg.value,
             risk_threshold: _riskThreshold
         });
 
-        guilds[GuildId].members.push(msg.sender);
+        guilds[GuildId].memberNames.push(_creatorName);
+        guilds[GuildId].memberAddresses.push(msg.sender);
         guilds[GuildId].memberStakes.push(msg.value);
    
         emit GuildCreated(GuildId, msg.sender);
@@ -88,11 +107,12 @@ contract HyperHackContract {
     function topUpStake(bytes32 guildId) external payable {
     require(msg.value > 0, "Send valid amount");
     require(util_isMember(guildId, msg.sender), "Not a guild member");
+    
 
     uint256 memberIndex;
 
-    for (uint256 i = 0; i < guilds[guildId].members.length; i++) {
-        if (guilds[guildId].members[i] == msg.sender) {
+    for (uint256 i = 0; i < guilds[guildId].memberAddresses.length; i++) {
+        if (guilds[guildId].memberAddresses[i] == msg.sender) {
             memberIndex = i;
             break;
         }
@@ -102,16 +122,17 @@ contract HyperHackContract {
     }
 
 
-    function joinGuild(bytes32 GuildId, uint256 entryThreshold) external payable {
+    function joinGuild(bytes32 GuildId, string memory _memberName) external payable {
         require(!guilds[GuildId].capped,"Guild cap reached");
         require(!util_isMember(GuildId, msg.sender),"Already a member");
-        require(msg.value >= entryThreshold,"Deposit Entry Threshold");
+        require(msg.value >=  guilds[GuildId].entryThreshold,"Deposit Entry Threshold");
 
-        guilds[GuildId].members.push(msg.sender);
+        guilds[GuildId].memberNames.push(_memberName);
+        guilds[GuildId].memberAddresses.push(msg.sender);
         guilds[GuildId].memberStakes.push(msg.value);
         guilds[GuildId].pool += msg.value;
 
-        if (guilds[GuildId].members.length == guilds[GuildId].memberCap) {
+        if (guilds[GuildId].memberAddresses.length == guilds[GuildId].memberCap) {
             guilds[GuildId].capped = true;}
         
         emit JoinedGuild(GuildId, msg.sender);
@@ -170,12 +191,12 @@ contract HyperHackContract {
             guildProposals[index].voters.push(msg.sender);
         }
 
-        if(guilds[_guildId].members.length == 2){
+        if(guilds[_guildId].memberAddresses.length == 2){
             if(guildProposals[index].yesVotes == 2){
                 guildProposals[index].approved = true;
             }
-        }else if(guilds[_guildId].members.length > 2){
-           if((guildProposals[index].totalVotes >  (guilds[_guildId].members.length)/2) && 
+        }else if(guilds[_guildId].memberAddresses.length > 2){
+           if((guildProposals[index].totalVotes >  (guilds[_guildId].memberAddresses.length)/2) && 
                 guildProposals[index].yesVotes > (guildProposals[index].totalVotes)/2){ 
                    
                     guildProposals[index].approved = true;
@@ -230,7 +251,7 @@ contract HyperHackContract {
         
         uint256 totalStake;
         uint256[] memory stakes = guilds[guildProposals[index].guildId].memberStakes;
-        address[] memory members = guilds[guildProposals[index].guildId].members;
+        address[] memory members = guilds[guildProposals[index].guildId].memberAddresses;
 
 
         for (uint256 i = 0; i < stakes.length; i++) {
@@ -281,8 +302,8 @@ contract HyperHackContract {
                 uint256 distributableLoss = util_abs(Margin) - tradersLoss;
 
 
-            for(uint16 c = 0; c < guilds[guildProposals[index].guildId].members.length; c++){
-                if(guilds[guildProposals[index].guildId].members[c] == msg.sender){
+            for(uint16 c = 0; c < guilds[guildProposals[index].guildId].memberAddresses.length; c++){
+                if(guilds[guildProposals[index].guildId].memberAddresses[c] == msg.sender){
                     guilds[guildProposals[index].guildId].memberStakes[c] -= tradersLoss;
                 }
             }
@@ -324,19 +345,22 @@ contract HyperHackContract {
         }
 
 
-        for (uint16 i = 0; i < guilds[guildId].members.length; i++) {
-             if (guilds[guildId].members[i] == msg.sender) {
+        for (uint16 i = 0; i < guilds[guildId].memberAddresses.length; i++) {
+             if (guilds[guildId].memberAddresses[i] == msg.sender) {
                 memberStake = guilds[guildId].memberStakes[i];
                 amountToWithdraw = (memberStake * 95) / 100;
 
-                        for(uint16 cc = i; cc < guilds[guildId].members.length-1; cc++ ){
-                           guilds[guildId].members[cc] = guilds[guildId].members[cc+1];
+                        for(uint16 cc = i; cc < guilds[guildId].memberAddresses.length-1; cc++ ){
+                           guilds[guildId].memberAddresses[cc] = guilds[guildId].memberAddresses[cc+1];
                            guilds[guildId].memberStakes[cc] = guilds[guildId].memberStakes[cc+1];
-                            if(cc == guilds[guildId].members.length-2){
-                               guilds[guildId].members[cc+1];
-                               guilds[guildId].members.pop();
+                           guilds[guildId].memberNames[cc] = guilds[guildId].memberNames[cc+1];
+                            if(cc == guilds[guildId].memberAddresses.length-2){
+                               guilds[guildId].memberAddresses[cc+1];
+                               guilds[guildId].memberAddresses.pop();
                                guilds[guildId].memberStakes[cc+1];
                                guilds[guildId].memberStakes.pop();
+                               guilds[guildId].memberNames[cc+1];
+                               guilds[guildId].memberNames.pop();
                                break;
                             }
                         } 
@@ -352,14 +376,13 @@ contract HyperHackContract {
 
     guilds[guildId].pool -= amountToWithdraw;
     
-    uint distributeStakeLeft = stakeLeft/guilds[guildId].members.length; 
+    uint distributeStakeLeft = stakeLeft/guilds[guildId].memberAddresses.length; 
 
-    for(uint16 i = 0; i < guilds[guildId].members.length; i++) {
+    for(uint16 i = 0; i < guilds[guildId].memberAddresses.length; i++) {
         guilds[guildId].memberStakes[i] += distributeStakeLeft;
     }
 
     }
-
 
     //Read Functions
     function GuildIds () external view returns(bytes32[] memory){
