@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { publicClient, walletClient } from "../../utils/viemClient";
-// import { useWallets } from "@privy-io/react-auth";
 import { contractABI, contractAddress } from "../../components/contractConfig";
 import { createWalletClient, custom } from "viem";
 import { sepolia } from "viem/chains";
@@ -9,8 +8,6 @@ const Wallet_Client_2 = createWalletClient({
   chain: sepolia,
   transport: custom(window.ethereum),
 });
-
-// Contract address and ABI (replace with your deployed contract address)
 
 // Initial state
 const initialState = {
