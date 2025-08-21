@@ -69,62 +69,136 @@ export const fetchGuildData = createAsyncThunk(
   }
 );
 
+// export const createGuild = createAsyncThunk(
+//   "contract/createGuild",
+//   async (
+//     {
+//       creatorName,
+//       guildName,
+//       description,
+//       memberCap,
+//       entryThreshold,
+//       riskThreshold,
+//       wallet,
+//     },
+//     { getState, rejectWithValue }
+//   ) => {
+//     try {
+//       const { auth } = getState();
+//       if (!auth.authenticated || !auth.address) {
+//         throw new Error("User not authenticated");
+//       }
+//       if (!wallet) {
+//         throw new Error("No wallet connected");
+//       }
+
+//       console.log("Creating guild with params:", {
+//         creatorName,
+//         guildName,
+//         description,
+//         memberCap,
+//         entryThreshold,
+//         riskThreshold,
+//       });
+//       const walletClientInstance = walletClient(wallet);
+//       const { request } = await publicClient.simulateContract({
+//         address: contractAddress,
+//         abi: contractABI,
+//         functionName: "createGuild",
+//         args: [
+//           creatorName,
+//           guildName,
+//           description,
+//           memberCap,
+//           entryThreshold,
+//           riskThreshold,
+//         ],
+//         account: auth.address,
+//         value: entryThreshold,
+//       });
+
+//       const hash = await walletClientInstance.writeContract(request);
+//       console.log("Transaction hash:", hash);
+//       const receipt = await publicClient.waitForTransactionReceipt({ hash });
+//       console.log("Transaction receipt:", receipt);
+//       return receipt;
+//     } catch (error) {
+//       console.error("Failed to create guild:", error);
+//       return rejectWithValue(error.message || "Unknown error creating guild");
+//     }
+//   }
+// );
+
 export const createGuild = createAsyncThunk(
   "contract/createGuild",
-  async (
-    {
-      creatorName,
-      guildName,
-      description,
-      memberCap,
-      entryThreshold,
-      riskThreshold,
-      wallet,
-    },
-    { getState, rejectWithValue }
-  ) => {
+  async (guildData, { rejectWithValue }) => {
     try {
-      const { auth } = getState();
-      if (!auth.authenticated || !auth.address) {
-        throw new Error("User not authenticated");
-      }
-      if (!wallet) {
-        throw new Error("No wallet connected");
-      }
-
-      console.log("Creating guild with params:", {
+      const {
+        wallet,
         creatorName,
         guildName,
         description,
         memberCap,
         entryThreshold,
         riskThreshold,
-      });
-      const walletClientInstance = walletClient(wallet);
-      const { request } = await publicClient.simulateContract({
-        address: contractAddress,
-        abi: contractABI,
-        functionName: "createGuild",
-        args: [
-          creatorName,
-          guildName,
-          description,
-          memberCap,
-          entryThreshold,
-          riskThreshold,
-        ],
-        account: auth.address,
-        value: entryThreshold,
-      });
+      } = guildData;
+      console.log("Creating guild with data:", guildData);
+      console.log("Wallet address:", wallet.address);
 
-      const hash = await walletClientInstance.writeContract(request);
-      console.log("Transaction hash:", hash);
-      const receipt = await publicClient.waitForTransactionReceipt({ hash });
-      console.log("Transaction receipt:", receipt);
-      return receipt;
+      // Get Privy's Ethers provider and signer
+      if (!wallet.getEthersProvider) {
+        throw new Error("Wallet does not have getEthersProvider method");
+      }
+      const provider = await wallet.getEthersProvider();
+      console.log("Ethers provider available:", !!provider);
+      const signer = await provider.getSigner();
+      console.log("Signer address:", await signer.getAddress());
+
+      // Create contract instance
+      const contract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        signer
+      );
+
+      // Send transaction
+      const tx = await contract.createGuild(
+        creatorName,
+        guildName,
+        description,
+        memberCap,
+        entryThreshold,
+        riskThreshold,
+        { value: entryThreshold }
+      );
+      console.log("Transaction sent:", tx.hash);
+
+      // Wait for transaction receipt using viem's publicClient
+      const receipt = await publicClient.waitForTransactionReceipt({
+        hash: tx.hash,
+      });
+      console.log("Transaction confirmed:", receipt);
+
+      // Extract guildId from GuildCreated event
+      const guildId = receipt.logs
+        .filter(
+          (log) => log.address.toLowerCase() === contractAddress.toLowerCase()
+        )
+        .map((log) => contract.interface.parseLog(log))
+        .find((event) => event.name === "GuildCreated")?.args?.guildId;
+
+      return {
+        guildId,
+        creatorName,
+        guildName,
+        description,
+        memberCap,
+        entryThreshold,
+        riskThreshold,
+      };
     } catch (error) {
-      console.error("Failed to create guild:", error);
-      return rejectWithValue(error.message || "Unknown error creating guild");
+      console.error("Error creating guild:", error);
+      return rejectWithValue(error.message || "Failed to create guild");
     }
   }
 );
