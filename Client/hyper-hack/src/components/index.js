@@ -12,3 +12,5 @@ export { default as Topbar } from "./Topbar";
 export { default as GridCard } from "./GridCard";
 export { default as Chat } from "./Chat";
 export { default as LeaderboardComp } from "./LeaderboardComp";
+export { default as AuthManager } from "./AuthManager";
+export { default as ProtectedRoute } from "./ProtectedRoute";

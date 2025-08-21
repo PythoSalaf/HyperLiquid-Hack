@@ -17,7 +17,7 @@ const DiscoverGuild = () => {
           </button>
         </div>
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {guildsData.slice(0, 3).map((item) => (
+          {guildsData?.slice(0, 3).map((item) => (
             <GridCard key={item.id} {...item} />
           ))}
         </div>

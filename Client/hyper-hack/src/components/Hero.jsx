@@ -1,8 +1,13 @@
+import { usePrivy } from "@privy-io/react-auth";
 import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
+  const { login } = usePrivy();
   const navigate = useNavigate();
-
+  const handleGetStarted = () => {
+    // login();
+    // navigate("/dashboard");
+  };
   return (
     <div className="w-full h-screen text-white bg-[#0f1724]">
       <div className="w-[95%] mx-auto md:w-[92%] pt-14 md:pt-20 flex flex-col md:flex-row items-center justify-between">
@@ -16,15 +21,17 @@ const Hero = () => {
           </p>
           <div className="flex items-center gap-9 mt-11">
             <button
+              className="border border-[#0e1a2a] active:bg-blue-800 active:scale-95 transition-transform duration-300 ease-in-out hover:bg-[#5b8eff] text-white rounded-lg py-1.5 px-4 shadow"
+              onClick={handleGetStarted}
+            >
+              Get Started
+            </button>
+            <button
               className="bg-[#5b8eff] text-white active:bg-blue-800 active:scale-95 transition-transform duration-300 rounded-lg cursor-pointer py-1.5 px-4"
               onClick={() => navigate("/dashboard")}
             >
               Join a guild
             </button>
-            <button className="border border-[#0e1a2a] active:bg-blue-800 active:scale-95 transition-transform duration-300 ease-in-out hover:bg-[#5b8eff] text-white rounded-lg py-1.5 px-4 shadow">
-              Get Started
-            </button>
-      
           </div>
         </div>
         <div className="">{/* <img src="" alt="" /> */}</div>
