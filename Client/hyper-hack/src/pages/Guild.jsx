@@ -245,12 +245,12 @@ const Guild = () => {
                         <td className="py-2 text-sm md:text-base">
                           {data?.guild?.guildName || "Unknown Guild"}
                         </td>
-                        <td className="py-2 text-sm md:text-base">
+                        <td className="py-2 text-sm md:text-base font-semibold">
                           <div className="text-green-800 py-1">
                             {data?.guild?.entryThreshold
                               ? entryThresholdeth(data.guild.entryThreshold)
                               : "0"}{" "}
-                            ETH
+                            HYPE
                           </div>
                         </td>
                         <td className="py-2 text-sm md:text-base">

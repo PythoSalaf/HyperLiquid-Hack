@@ -2,9 +2,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { useWallets } from "@privy-io/react-auth";
 import { joinGuild } from "../Features/Contract/contractSlice";
-import { Chat } from "../components";
+import { Chat, JoinGuildModal } from "../components";
 import { entryThresholdeth } from "../utils/formatters";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const GuildDetails = () => {
   const { guildId } = useParams(); // Get guildId from URL
@@ -17,6 +17,10 @@ const GuildDetails = () => {
   // Find the guild by guildId
   const guildData = guilds.find((g) => g.guildId === guildId);
 
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formError, setFormError] = useState("");
+
   useEffect(() => {
     if (!guildData) {
       console.warn("Guild not found for ID:", guildId);
@@ -25,31 +29,49 @@ const GuildDetails = () => {
     }
   }, [guildData, guildId]);
 
-  const handleJoinGuild = async () => {
+  const handleJoinGuild = async (guildId, memberName, entryThreshold) => {
     if (!authenticated || !address || !wallets[0]) {
+      setFormError("Please connect your wallet to join a guild");
       console.error("User not authenticated or wallet not connected");
       return;
     }
 
     if (!guildData) {
+      setFormError("No guild data available to join");
       console.error("No guild data available to join");
       return;
     }
 
     try {
+      console.log("Joining guild with data:", {
+        guildId,
+        memberName,
+        entryThreshold,
+      });
       await dispatch(
         joinGuild({
           guildId,
-          memberName: `Member_${address.slice(0, 6)}`,
-          entryThreshold: guildData.guild.entryThreshold || BigInt(0),
+          memberName,
+          entryThreshold: entryThreshold || BigInt(0),
           wallet: wallets[0],
         })
       ).unwrap();
       console.log("Joined guild successfully");
+      setFormError("");
       navigate("/guilds"); // Redirect to guilds page after joining
     } catch (error) {
       console.error("Failed to join guild:", error);
+      setFormError(error.message || "Failed to join guild");
     }
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setFormError("");
   };
 
   if (!authenticated) {
@@ -74,16 +96,28 @@ const GuildDetails = () => {
 
   return (
     <div className="w-full py-3">
+      <JoinGuildModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onJoin={handleJoinGuild}
+        guildId={guildId}
+        entryThreshold={guild.entryThreshold || BigInt(0)}
+        guildName={guild.guildName || "Unknown Guild"}
+        wallet={wallets[0]}
+      />
       <div className="flex items-center mb-2 justify-between">
         <h2 className="font-semibold text-lg md:text-xl mb-4">Guild Details</h2>
         <button
-          className="bg-[#1e2a46] text-sm font-semibold md:text-base rounded-lg py-0.5 md:py-1.5 px-6"
-          onClick={handleJoinGuild}
+          className="bg-[#1e2a46] cursor-pointer text-sm font-semibold md:text-base rounded-lg py-0.5 md:py-1.5 px-6"
+          onClick={openModal}
           disabled={!authenticated || !wallets[0]}
         >
           Join Guild
         </button>
       </div>
+      {formError && (
+        <div className="text-red-500 text-sm mb-4">{formError}</div>
+      )}
       <div className="flex items-center gap-6 justify-between flex-col md:flex-row w-full">
         <div className="flex items-center justify-between py-2 rounded-lg border border-[#1e2a46] w-full">
           <div className="w-[92%] mx-auto">

@@ -14,3 +14,4 @@ export { default as Chat } from "./Chat";
 export { default as LeaderboardComp } from "./LeaderboardComp";
 export { default as AuthManager } from "./AuthManager";
 export { default as ProtectedRoute } from "./ProtectedRoute";
+export { default as JoinGuildModal } from "./JoinGuildModal";
