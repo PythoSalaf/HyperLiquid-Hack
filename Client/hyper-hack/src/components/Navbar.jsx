@@ -1,13 +1,16 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { MdMenu } from "react-icons/md";
+import { MdMenu, MdClose } from "react-icons/md";
 import { usePrivy } from "@privy-io/react-auth";
 import { useSelector } from "react-redux";
+
 const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const { login, logout } = usePrivy();
   const { authenticated } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
-    logout(); // This will trigger the logout in AuthManager
+    logout();
   };
 
   return (
@@ -22,7 +25,7 @@ const Navbar = () => {
           <Link>Benefits</Link>
           <Link>Guilds</Link>
         </div>
-        <div className="flex">
+        <div className="hidden md:flex">
           <button
             style={{ display: authenticated ? "none" : "flex" }}
             onClick={login}
@@ -39,11 +42,64 @@ const Navbar = () => {
           >
             Logout
           </button>
-          <div className="block md:hidden">
-            <MdMenu className="size-6" />
-          </div>
+        </div>
+        <div className="block md:hidden" onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? (
+            <MdClose className="size-8" />
+          ) : (
+            <MdMenu className="size-8" />
+          )}
         </div>
       </div>
+      {isOpen && (
+        <div className="absolute top-14 flex items-center flex-col gap-8  w-full py-10 bg-[#1e2a46]">
+          <Link
+            className="text-base font-semibold"
+            to="/"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            Home
+          </Link>
+          <Link
+            className="text-base font-semibold"
+            to="/"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            Dashboard
+          </Link>
+          <Link
+            className="text-base font-semibold"
+            to=""
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            Guilds
+          </Link>
+          <Link
+            className="text-base font-semibold"
+            to=""
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            Leaderboard
+          </Link>
+          <div className="">
+            {authenticated ? (
+              <button
+                className="bg-[#5b8eff] text-white text-base font-semibold px-6 py-1.5 rounded-xl"
+                onClick={login}
+              >
+                Logout
+              </button>
+            ) : (
+              <button
+                className="bg-[#5b8eff] text-white text-base font-semibold px-6 py-1.5 rounded-xl"
+                onClick={logout}
+              >
+                Login/Signin
+              </button>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
