@@ -21,7 +21,7 @@ const GridCard = ({ id, name, description, entryPoint, members }) => {
                 Access Amount
               </h2>
               <h2 className="font-bold text-lg md:text-xl text-green-800 mt-1">
-                {entryPoint} ETH
+                {entryPoint} HYPE
               </h2>
             </div>
           </div>
