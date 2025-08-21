@@ -2,6 +2,14 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { publicClient, walletClient } from "../../utils/viemClient";
 // import { useWallets } from "@privy-io/react-auth";
 import { contractABI, contractAddress } from "../../components/contractConfig";
+import {createWalletClient, custom} from 'viem'
+import {sepolia} from 'viem/chains'
+
+const Wallet_Client_2 = createWalletClient({
+chain: sepolia,
+transport: custom(window.ethereum)
+})
+
 // Contract address and ABI (replace with your deployed contract address)
 
 // Initial state
@@ -101,7 +109,7 @@ export const createGuild = createAsyncThunk(
         riskThreshold,
       });
       const walletClientInstance = walletClient(wallet);
-      const { request } = await publicClient.simulateContract({
+      const Hash = await Wallet_Client_2.writeContract({
         address: contractAddress,
         abi: contractABI,
         functionName: "createGuild",
@@ -150,7 +158,7 @@ export const joinGuild = createAsyncThunk(
         entryThreshold,
       });
       const walletClientInstance = walletClient(wallet);
-      const { request } = await publicClient.simulateContract({
+      const Hash = await Wallet_Client_2.writeContract({
         address: contractAddress,
         abi: contractABI,
         functionName: "joinGuild",
