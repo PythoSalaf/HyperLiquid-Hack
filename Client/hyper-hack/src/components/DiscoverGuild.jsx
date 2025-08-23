@@ -11,7 +11,7 @@ const DiscoverGuild = () => {
           <h2 className="font-semibold text-lg md:text-xl">Discover Guild</h2>
           <button
             className="rounded-lg px-4 py-1 bg-[#1f2b45]"
-            onClick={() => navigate("/guilds")}
+            onClick={() => navigate("/dashboard/guilds")}
           >
             Browse All
           </button>

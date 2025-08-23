@@ -176,6 +176,240 @@ export const joinGuild = createAsyncThunk(
   }
 );
 
+export const proposeTrade = createAsyncThunk(
+  "contract/proposeTrade",
+  async (
+    { guildId, amount, description, wallet },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const { auth } = getState();
+      if (!auth.authenticated || !auth.address) {
+        throw new Error("User not authenticated");
+      }
+      if (!wallet) {
+        throw new Error("No wallet connected");
+      }
+
+      console.log("Proposing trade with params:", {
+        guildId,
+        amount,
+        description,
+      });
+
+      const request = await Wallet_Client_2.prepareWriteContract({
+        address: contractAddress,
+        abi: contractABI,
+        functionName: "proposeTrade",
+        args: [guildId, amount, description],
+        account: auth.address,
+      });
+
+      const hash = await Wallet_Client_2.writeContract(request);
+      console.log("Transaction hash:", hash);
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      console.log("Transaction receipt:", receipt);
+      return receipt;
+    } catch (error) {
+      console.error("Failed to propose trade:", error);
+      return rejectWithValue(error.message || "Unknown error proposing trade");
+    }
+  }
+);
+
+export const topUpStake = createAsyncThunk(
+  "contract/topUpStake",
+  async ({ guildId, amount, wallet }, { getState, rejectWithValue }) => {
+    try {
+      const { auth } = getState();
+      if (!auth.authenticated || !auth.address) {
+        throw new Error("User not authenticated");
+      }
+      if (!wallet) {
+        throw new Error("No wallet connected");
+      }
+      if (amount <= 0) {
+        throw new Error("Invalid amount");
+      }
+
+      console.log("Topping up stake with params:", { guildId, amount });
+
+      const request = await Wallet_Client_2.prepareWriteContract({
+        address: contractAddress,
+        abi: contractABI,
+        functionName: "topUpStake",
+        args: [guildId],
+        account: auth.address,
+        value: amount,
+      });
+
+      const hash = await Wallet_Client_2.writeContract(request);
+      console.log("Transaction hash:", hash);
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      console.log("Transaction receipt:", receipt);
+      return receipt;
+    } catch (error) {
+      console.error("Failed to top up stake:", error);
+      return rejectWithValue(error.message || "Unknown error topping up stake");
+    }
+  }
+);
+
+export const voteProposal = createAsyncThunk(
+  "contract/voteProposal",
+  async (
+    { guildId, proposalId, voteYes, wallet },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const { auth } = getState();
+      if (!auth.authenticated || !auth.address) {
+        throw new Error("User not authenticated");
+      }
+      if (!wallet) {
+        throw new Error("No wallet connected");
+      }
+
+      console.log("Voting on proposal with params:", {
+        guildId,
+        proposalId,
+        voteYes,
+      });
+
+      const request = await Wallet_Client_2.prepareWriteContract({
+        address: contractAddress,
+        abi: contractABI,
+        functionName: "voteProposal",
+        args: [guildId, proposalId, voteYes],
+        account: auth.address,
+      });
+
+      const hash = await Wallet_Client_2.writeContract(request);
+      console.log("Transaction hash:", hash);
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      console.log("Transaction receipt:", receipt);
+      return receipt;
+    } catch (error) {
+      console.error("Failed to vote on proposal:", error);
+      return rejectWithValue(
+        error.message || "Unknown error voting on proposal"
+      );
+    }
+  }
+);
+
+export const executeProposal = createAsyncThunk(
+  "contract/executeProposal",
+  async ({ proposalId, wallet }, { getState, rejectWithValue }) => {
+    try {
+      const { auth } = getState();
+      if (!auth.authenticated || !auth.address) {
+        throw new Error("User not authenticated");
+      }
+      if (!wallet) {
+        throw new Error("No wallet connected");
+      }
+
+      console.log("Executing proposal with params:", { proposalId });
+
+      const request = await Wallet_Client_2.prepareWriteContract({
+        address: contractAddress,
+        abi: contractABI,
+        functionName: "executeProposal",
+        args: [proposalId],
+        account: auth.address,
+      });
+
+      const hash = await Wallet_Client_2.writeContract(request);
+      console.log("Transaction hash:", hash);
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      console.log("Transaction receipt:", receipt);
+      return receipt;
+    } catch (error) {
+      console.error("Failed to execute proposal:", error);
+      return rejectWithValue(
+        error.message || "Unknown error executing proposal"
+      );
+    }
+  }
+);
+
+export const returnTradeFunds = createAsyncThunk(
+  "contract/returnTradeFunds",
+  async ({ proposalId, amount, wallet }, { getState, rejectWithValue }) => {
+    try {
+      const { auth } = getState();
+      if (!auth.authenticated || !auth.address) {
+        throw new Error("User not authenticated");
+      }
+      if (!wallet) {
+        throw new Error("No wallet connected");
+      }
+      if (amount <= 0) {
+        throw new Error("Invalid amount");
+      }
+
+      console.log("Returning trade funds with params:", { proposalId, amount });
+
+      const request = await Wallet_Client_2.prepareWriteContract({
+        address: contractAddress,
+        abi: contractABI,
+        functionName: "returnTradeFunds",
+        args: [proposalId],
+        account: auth.address,
+        value: amount,
+      });
+
+      const hash = await Wallet_Client_2.writeContract(request);
+      console.log("Transaction hash:", hash);
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      console.log("Transaction receipt:", receipt);
+      return receipt;
+    } catch (error) {
+      console.error("Failed to return trade funds:", error);
+      return rejectWithValue(
+        error.message || "Unknown error returning trade funds"
+      );
+    }
+  }
+);
+
+export const withdrawStake = createAsyncThunk(
+  "contract/withdrawStake",
+  async ({ guildId, wallet }, { getState, rejectWithValue }) => {
+    try {
+      const { auth } = getState();
+      if (!auth.authenticated || !auth.address) {
+        throw new Error("User not authenticated");
+      }
+      if (!wallet) {
+        throw new Error("No wallet connected");
+      }
+
+      console.log("Withdrawing stake with params:", { guildId });
+
+      const request = await Wallet_Client_2.prepareWriteContract({
+        address: contractAddress,
+        abi: contractABI,
+        functionName: "withdrawStake",
+        args: [guildId],
+        account: auth.address,
+      });
+
+      const hash = await Wallet_Client_2.writeContract(request);
+      console.log("Transaction hash:", hash);
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      console.log("Transaction receipt:", receipt);
+      return receipt;
+    } catch (error) {
+      console.error("Failed to withdraw stake:", error);
+      return rejectWithValue(
+        error.message || "Unknown error withdrawing stake"
+      );
+    }
+  }
+);
+
 const contractSlice = createSlice({
   name: "contract",
   initialState,
@@ -232,6 +466,66 @@ const contractSlice = createSlice({
         state.status = "succeeded";
       })
       .addCase(joinGuild.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(proposeTrade.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(proposeTrade.fulfilled, (state) => {
+        state.status = "succeeded";
+      })
+      .addCase(proposeTrade.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(topUpStake.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(topUpStake.fulfilled, (state) => {
+        state.status = "succeeded";
+      })
+      .addCase(topUpStake.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(voteProposal.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(voteProposal.fulfilled, (state) => {
+        state.status = "succeeded";
+      })
+      .addCase(voteProposal.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(executeProposal.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(executeProposal.fulfilled, (state) => {
+        state.status = "succeeded";
+      })
+      .addCase(executeProposal.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(returnTradeFunds.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(returnTradeFunds.fulfilled, (state) => {
+        state.status = "succeeded";
+      })
+      .addCase(returnTradeFunds.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(withdrawStake.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(withdrawStake.fulfilled, (state) => {
+        state.status = "succeeded";
+      })
+      .addCase(withdrawStake.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });
