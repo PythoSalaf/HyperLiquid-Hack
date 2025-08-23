@@ -112,7 +112,11 @@ const Guild = () => {
   }
 
   if (status === "loading") {
-    return <div className="p-4">Loading...</div>;
+    return (
+      <div className="p-4 flex items-center justify-center h-screen">
+        Loading...
+      </div>
+    );
   }
 
   if (status === "failed") {
@@ -245,12 +249,12 @@ const Guild = () => {
                         <td className="py-2 text-sm md:text-base">
                           {data?.guild?.guildName || "Unknown Guild"}
                         </td>
-                        <td className="py-2 text-sm md:text-base">
-                          <div className="text-green-800 py-1">
+                        <td className="py-2 text-sm md:text-base font-semibold">
+                          <div className=" py-1">
                             {data?.guild?.entryThreshold
                               ? entryThresholdeth(data.guild.entryThreshold)
                               : "0"}{" "}
-                            ETH
+                            HYPE
                           </div>
                         </td>
                         <td className="py-2 text-sm md:text-base">
@@ -259,9 +263,9 @@ const Guild = () => {
                         <td className="py-2 text-sm md:text-base">
                           {data?.guild?.memberCap?.toString() || "0"}
                         </td>
-                        <td className="py-2 text-sm md:text-base px-3 font-semibold">
+                        <td className="py-2 text-sm md:text-base px-1 font-semibold">
                           <button
-                            className="rounded-3xl py-1 bg-[#6d8cff] text-[#081423]"
+                            className="rounded-2xl cursor-pointer py-1 px-4 bg-[#6d8cff] text-[#081423]"
                             onClick={() =>
                               navigate(`/dashboard/guilds/${data.guildId}`)
                             }
