@@ -1,280 +1,6 @@
 //This is Sepolia Testnet
-export const contractAddress = "0x43b58666Af4F45DBa433fb19ad6f032bc209eEE5"
+export const contractAddress = "0x7323ad85BFc66b199C13dBD292C49d10052688d2"
  export const contractABI = [
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_creatorName",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_guildName",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_description",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "memberCap",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "entryThreshold",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint16",
-				"name": "_riskThreshold",
-				"type": "uint16"
-			}
-		],
-		"name": "createGuild",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes4",
-				"name": "_proposalId",
-				"type": "bytes4"
-			}
-		],
-		"name": "executeProposal",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "bytes32",
-				"name": "guildId",
-				"type": "bytes32"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			}
-		],
-		"name": "GuildCreated",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "bytes32",
-				"name": "guildId",
-				"type": "bytes32"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "member",
-				"type": "address"
-			}
-		],
-		"name": "JoinedGuild",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "GuildId",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "string",
-				"name": "_memberName",
-				"type": "string"
-			}
-		],
-		"name": "joinGuild",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "_guildId",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "description",
-				"type": "string"
-			}
-		],
-		"name": "proposeTrade",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes4",
-				"name": "_proposalId",
-				"type": "bytes4"
-			}
-		],
-		"name": "returnTradeFunds",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "guildId",
-				"type": "bytes32"
-			}
-		],
-		"name": "topUpStake",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "bytes32",
-				"name": "guildId",
-				"type": "bytes32"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "trader",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "profit",
-				"type": "uint256"
-			}
-		],
-		"name": "TradeExecuted",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "bytes32",
-				"name": "guildId",
-				"type": "bytes32"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "trader",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "TradeProposed",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "bytes32",
-				"name": "guildId",
-				"type": "bytes32"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "voter",
-				"type": "address"
-			}
-		],
-		"name": "Voted",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "_guildId",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "bytes4",
-				"name": "_proposalId",
-				"type": "bytes4"
-			},
-			{
-				"internalType": "bool",
-				"name": "_voteYes",
-				"type": "bool"
-			}
-		],
-		"name": "voteProposal",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "guildId",
-				"type": "bytes32"
-			}
-		],
-		"name": "withdrawStake",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "guildCount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
 	{
 		"inputs": [
 			{
@@ -353,7 +79,7 @@ export const contractAddress = "0x43b58666Af4F45DBa433fb19ad6f032bc209eEE5"
 						"type": "uint16"
 					}
 				],
-				"internalType": "struct HyperHackContract.Guild",
+				"internalType": "struct HyperHausContract.Guild",
 				"name": "",
 				"type": "tuple"
 			},
@@ -415,9 +141,86 @@ export const contractAddress = "0x43b58666Af4F45DBa433fb19ad6f032bc209eEE5"
 						"type": "bool"
 					}
 				],
-				"internalType": "struct HyperHackContract.TradeProposal[]",
+				"internalType": "struct HyperHausContract.TradeProposal[]",
 				"name": "",
 				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "GuildIds",
+		"outputs": [
+			{
+				"internalType": "bytes32[]",
+				"name": "",
+				"type": "bytes32[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_creatorName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_guildName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_description",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "memberCap",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "entryThreshold",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint16",
+				"name": "_riskThreshold",
+				"type": "uint16"
+			}
+		],
+		"name": "createGuild",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes4",
+				"name": "_proposalId",
+				"type": "bytes4"
+			}
+		],
+		"name": "executeProposal",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "guildCount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -437,19 +240,6 @@ export const contractAddress = "0x43b58666Af4F45DBa433fb19ad6f032bc209eEE5"
 				"internalType": "bytes32",
 				"name": "",
 				"type": "bytes32"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "GuildIds",
-		"outputs": [
-			{
-				"internalType": "bytes32[]",
-				"name": "",
-				"type": "bytes32[]"
 			}
 		],
 		"stateMutability": "view",
@@ -586,17 +376,78 @@ export const contractAddress = "0x43b58666Af4F45DBa433fb19ad6f032bc209eEE5"
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
+				"internalType": "bytes32",
+				"name": "GuildId",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "string",
+				"name": "_memberName",
+				"type": "string"
+			}
+		],
+		"name": "joinGuild",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "_guildId",
+				"type": "bytes32"
 			},
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "amount",
 				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "description",
+				"type": "string"
 			}
 		],
-		"name": "guildTradeIds",
+		"name": "proposeTrade",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes4",
+				"name": "_proposalId",
+				"type": "bytes4"
+			},
+			{
+				"internalType": "address",
+				"name": "vestingC",
+				"type": "address"
+			}
+		],
+		"name": "returnTradeFunds",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "guildId",
+				"type": "bytes32"
+			}
+		],
+		"name": "topUpStake",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "vested",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -606,5 +457,316 @@ export const contractAddress = "0x43b58666Af4F45DBa433fb19ad6f032bc209eEE5"
 		],
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_guildMember",
+				"type": "address"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "_guildId",
+				"type": "bytes32"
+			}
+		],
+		"name": "vestingCancelled",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "_guildId",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "bytes4",
+				"name": "_proposalId",
+				"type": "bytes4"
+			},
+			{
+				"internalType": "bool",
+				"name": "_voteYes",
+				"type": "bool"
+			}
+		],
+		"name": "voteProposal",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]
+
+export const vestingAddress = "0x5AE009685C018dDdF0B26220D399251fB667d3Bb"
+export const vestingABI = [
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [],
+		"name": "MAX_VESTING_DURATION",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address[]",
+				"name": "members",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "stakes",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "uint256",
+				"name": "cliffDuration",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "_guildFrom",
+				"type": "bytes32"
+			}
+		],
+		"name": "Vesting",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "WEEK",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "scheduleId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "_guildContract",
+				"type": "address"
+			}
+		],
+		"name": "cancelSchedule",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "scheduleId",
+				"type": "uint256"
+			}
+		],
+		"name": "claim",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "currentCycleStart",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "getUserSchedules",
+		"outputs": [
+			{
+				"internalType": "uint256[]",
+				"name": "",
+				"type": "uint256[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalSchedules",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "userSchedules",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "userSchedulesCount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "scheduleId",
+				"type": "uint256"
+			}
+		],
+		"name": "vestedAmount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "vestingSchedules",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "Id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "guildFrom",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amountClaimed",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "startTimestamp",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "cliffDuration",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "cancelled",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "active",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
 	}
 ]
