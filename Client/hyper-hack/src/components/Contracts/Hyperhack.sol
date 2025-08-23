@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-contract HyperHackContract {
+contract HyperHausContract {
 
-    
+    uint public vested;
+
      struct Guild {
         address ownerAddress;
         string ownerName;
@@ -15,7 +16,7 @@ contract HyperHackContract {
         bool capped;
         string[] memberNames;
         address[] memberAddresses;
-        uint[] memberStakes;
+        uint256[] memberStakes;
         uint256 pool;
         uint16 risk_threshold;
     }
@@ -40,14 +41,6 @@ contract HyperHackContract {
     uint256 public guildCount;
     TradeProposal[] public guildProposals;
 
-    mapping(uint256 => uint256[]) public guildTradeIds; 
-
-    event GuildCreated(bytes32 guildId, address owner);
-    event JoinedGuild(bytes32 guildId, address member);
-    event TradeProposed(bytes32 guildId, address trader, uint256 amount);
-    event Voted(bytes32 guildId, address voter);
-    event TradeExecuted(bytes32 guildId, address trader, uint256 profit);
-
     function util_isMember(bytes32 GuildId, address user)private view returns(bool) {
            
             address[] memory _members = guilds[GuildId].memberAddresses;
@@ -59,8 +52,8 @@ contract HyperHackContract {
         return false;
     }
     
-       function util_abs(int256 x) internal pure returns(uint){
-        return uint(x >= 0 ? x : -x);
+       function util_abs(int256 x) internal pure returns(uint256){
+        return uint256(x >= 0 ? x : -x);
     }
 
     function createGuild(
@@ -99,10 +92,8 @@ contract HyperHackContract {
         guilds[GuildId].memberAddresses.push(msg.sender);
         guilds[GuildId].memberStakes.push(msg.value);
    
-        emit GuildCreated(GuildId, msg.sender);
         guildCount++;
     }
-
 
     function topUpStake(bytes32 guildId) external payable {
     require(msg.value > 0, "Send valid amount");
@@ -121,10 +112,8 @@ contract HyperHackContract {
     guilds[guildId].pool += msg.value;
     }
 
-
     function joinGuild(bytes32 GuildId, string memory _memberName) external payable {
-        require(!guilds[GuildId].capped,"Guild cap reached");
-        require(!util_isMember(GuildId, msg.sender),"Already a member");
+        require(!util_isMember(GuildId, msg.sender) && !guilds[GuildId].capped,"Cap reached / Already member");
         require(msg.value >=  guilds[GuildId].entryThreshold,"Deposit Entry Threshold");
 
         guilds[GuildId].memberNames.push(_memberName);
@@ -134,8 +123,7 @@ contract HyperHackContract {
 
         if (guilds[GuildId].memberAddresses.length == guilds[GuildId].memberCap) {
             guilds[GuildId].capped = true;}
-        
-        emit JoinedGuild(GuildId, msg.sender);
+    
     }
 
     function proposeTrade(bytes32 _guildId, uint256 amount, string memory description) external {
@@ -159,7 +147,6 @@ contract HyperHackContract {
                fulfilled: false
          }));
 
-        emit TradeProposed(_guildId, msg.sender, amount);
     }
 
     function voteProposal(bytes32 _guildId, bytes4 _proposalId, bool _voteYes) external {
@@ -198,12 +185,10 @@ contract HyperHackContract {
         }else if(guilds[_guildId].memberAddresses.length > 2){
            if((guildProposals[index].totalVotes >  (guilds[_guildId].memberAddresses.length)/2) && 
                 guildProposals[index].yesVotes > (guildProposals[index].totalVotes)/2){ 
-                   
                     guildProposals[index].approved = true;
            }
         }
 
-        emit Voted(_guildId, msg.sender);
     }
 
     function executeProposal(bytes4 _proposalId) external {
@@ -226,15 +211,13 @@ contract HyperHackContract {
 
     
         (bool sent, ) = payable(msg.sender).call{value: guildProposals[index].amount}("");
-        require(sent, "Failed to send Ether");
     
         guildProposals[index].executed = true;
         guilds[guildProposals[index].guildId].pool -= guildProposals[index].amount;
 
-        emit TradeExecuted(guildProposals[index].guildId, msg.sender, guildProposals[index].amount);
     }
 
-    function returnTradeFunds(bytes4 _proposalId) external payable{
+    function returnTradeFunds(bytes4 _proposalId, address vestingC) external payable{
 
         uint16 index;
         bool found;
@@ -268,12 +251,21 @@ contract HyperHackContract {
         guilds[guildProposals[index].guildId].pool += Principal;
 
         if (Margin > 0) {
-        
-            uint256 vestingAmount = (uint(Margin) * 40) / 100;
-            // (bool sentVesting, ) = payable(vestingContract).call{value: vestingAmount}("");
-            // require(sentVesting, "Failed to send to vesting contract");
+            bytes memory CallData = abi.encodeWithSignature("Vesting(address[],uint256[],uint256,bytes32)",
+            guilds[guildProposals[index].guildId].memberAddresses,
+            guilds[guildProposals[index].guildId].memberStakes,
+            15,
+            guildProposals[index].guildId
+            );
 
-            uint256 distributableProfit = uint(Margin) - vestingAmount;
+            uint _Margin = util_abs(Margin);
+            uint256 vestingAmount = (_Margin * 40) / 100;
+            vested = vestingAmount;
+
+            (bool sentVesting, ) = payable(vestingC).call{value:vestingAmount}(CallData);
+            require(sentVesting, "Failed to send to vesting contract");
+
+            uint256 distributableProfit = _Margin - vestingAmount;
 
             //Traders profit
             uint256 traderShare = (distributableProfit * 40) / 100;
@@ -292,7 +284,6 @@ contract HyperHackContract {
             
             if (memberReward > 0) {
                 (bool sentMember, ) = payable(members[i]).call{value: memberReward}("");
-                require(sentMember, "Failed to send member reward");
                     }
                 }
             } else if (Margin < 0) {
@@ -330,59 +321,20 @@ contract HyperHackContract {
             guildProposals[index].fulfilled = true;
         }
 
+        function vestingCancelled(address _guildMember, bytes32 _guildId) external payable returns(bool){
+                uint256 _memberIndex;
+                for(uint8 c=0; c < guilds[_guildId].memberAddresses.length; c++){
+                    if(guilds[_guildId].memberAddresses[c] == _guildMember){
+                         
+                         guilds[_guildId].memberStakes[c] += msg.value;
 
-    function withdrawStake(bytes32 guildId) external {
-        uint memberStake;
-        uint amountToWithdraw;
-
-        require(util_isMember(guildId, msg.sender), "Not a guild member");
-
-        for (uint256 i = 0; i < guildProposals.length; i++) {
-
-            if (guildProposals[i].guildId == guildId && guildProposals[i].trader == msg.sender) {
-            require(guildProposals[i].executed && guildProposals[i].fulfilled, "Cannot leave with unfulfilled proposal");
-            }
+                        return true;
+                    }
+                }
+                revert("Not a member");
+                return false;
         }
-
-
-        for (uint16 i = 0; i < guilds[guildId].memberAddresses.length; i++) {
-             if (guilds[guildId].memberAddresses[i] == msg.sender) {
-                memberStake = guilds[guildId].memberStakes[i];
-                amountToWithdraw = (memberStake * 95) / 100;
-
-                        for(uint16 cc = i; cc < guilds[guildId].memberAddresses.length-1; cc++ ){
-                           guilds[guildId].memberAddresses[cc] = guilds[guildId].memberAddresses[cc+1];
-                           guilds[guildId].memberStakes[cc] = guilds[guildId].memberStakes[cc+1];
-                           guilds[guildId].memberNames[cc] = guilds[guildId].memberNames[cc+1];
-                            if(cc == guilds[guildId].memberAddresses.length-2){
-                               guilds[guildId].memberAddresses[cc+1];
-                               guilds[guildId].memberAddresses.pop();
-                               guilds[guildId].memberStakes[cc+1];
-                               guilds[guildId].memberStakes.pop();
-                               guilds[guildId].memberNames[cc+1];
-                               guilds[guildId].memberNames.pop();
-                               break;
-                            }
-                        } 
-             }
-         }
-   
-    uint256 stakeLeft = memberStake - amountToWithdraw;
-
-    require(guilds[guildId].pool >= amountToWithdraw, "Guild pool insufficient");
-
-    (bool sent, ) = payable(msg.sender).call{value: amountToWithdraw}("");
-    require(sent, "Failed to send Ether");
-
-    guilds[guildId].pool -= amountToWithdraw;
-    
-    uint distributeStakeLeft = stakeLeft/guilds[guildId].memberAddresses.length; 
-
-    for(uint16 i = 0; i < guilds[guildId].memberAddresses.length; i++) {
-        guilds[guildId].memberStakes[i] += distributeStakeLeft;
-    }
-
-    }
+        
 
     //Read Functions
     function GuildIds () external view returns(bytes32[] memory){
@@ -401,7 +353,7 @@ contract HyperHackContract {
 
         for(uint16 c = 0; c < guildProposals.length; c++){
                 if(guildProposals[c].guildId == _GuildId) {
-                    thisGuildsProposals[incrementer] = guildProposals[c];
+                    thisGuildsProposals[incrementer] = guildProposals[c];   
                     incrementer++;
                 }
         }
