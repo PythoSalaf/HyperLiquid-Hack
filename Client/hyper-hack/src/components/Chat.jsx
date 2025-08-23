@@ -381,7 +381,7 @@ const Chat = ({
           .map((msg) => (
             <div
               key={msg.id}
-              className={`mb-2 p-2 rounded-lg max-w-[70%] ${
+              className={`mb-2 p-2 rounded-lg max-w-[50%] ${
                 msg.type === "proposal"
                   ? "bg-gray-100"
                   : msg.user.toLowerCase() === currentUser.toLowerCase()
@@ -389,17 +389,17 @@ const Chat = ({
                   : "bg-gray-600 text-white"
               }`}
             >
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-[#1e2a46]">
                 {new Date(msg.timestamp).toLocaleTimeString()}
               </p>
               {msg.type === "proposal" ? (
                 <>
-                  <p className="font-semibold">{`${msg.user.slice(
+                  <p className="font-semibold text-black">{`${msg.user.slice(
                     0,
                     6
                   )}...${msg.user.slice(-4)}`}</p>
-                  <p>{msg.content}</p>
-                  <p className="text-sm">
+                  <p className="text-[#1e2a46]">{msg.content}</p>
+                  <p className="text-sm text-[#1e2a46]">
                     Status:{" "}
                     {msg.fulfilled
                       ? "Fulfilled"
@@ -409,7 +409,7 @@ const Chat = ({
                       ? "Approved"
                       : "Pending"}
                   </p>
-                  <p className="text-sm">
+                  <p className="text-sm text-[#1e2a46]">
                     Votes: {msg.yesVotes}/{msg.totalVotes}
                   </p>
                   {isMember && (
