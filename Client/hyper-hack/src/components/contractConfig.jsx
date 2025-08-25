@@ -1,5 +1,27 @@
-//This is Sepolia Testnet
-export const contractAddress = "0x7323ad85BFc66b199C13dBD292C49d10052688d2"
+//This is HyperEVM Testnet
+
+import {defineChain} from 'viem'
+
+export const HyperEVMTestnet = defineChain({
+  id: 998,
+  name: 'Hyperliquid EVM Testnet',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Hyperliquid',
+    symbol: 'HYPE',
+  },
+  rpcUrls: {
+    default: { http: ['https://rpc.hyperliquid-testnet.xyz/evm'] },
+  },
+  blockExplorers: {
+    default: {
+      name: 'Purrsec',
+      url: 'https://testnet.purrsec.com/'
+    },
+  },
+})
+
+export const contractAddress = "0x55b4176a2abCda8108D085eECdC5152d443E463f"
  export const contractABI = [
 	{
 		"inputs": [
@@ -79,7 +101,7 @@ export const contractAddress = "0x7323ad85BFc66b199C13dBD292C49d10052688d2"
 						"type": "uint16"
 					}
 				],
-				"internalType": "struct HyperHausContract.Guild",
+				"internalType": "struct HyperHaus.Guild",
 				"name": "",
 				"type": "tuple"
 			},
@@ -141,7 +163,7 @@ export const contractAddress = "0x7323ad85BFc66b199C13dBD292C49d10052688d2"
 						"type": "bool"
 					}
 				],
-				"internalType": "struct HyperHausContract.TradeProposal[]",
+				"internalType": "struct HyperHaus.TradeProposal[]",
 				"name": "",
 				"type": "tuple[]"
 			}
@@ -507,7 +529,7 @@ export const contractAddress = "0x7323ad85BFc66b199C13dBD292C49d10052688d2"
 	}
 ]
 
-export const vestingAddress = "0x5AE009685C018dDdF0B26220D399251fB667d3Bb"
+export const vestingAddress = "0xe93eFe4d07bc0F92FbF14428A27390ae011889a8"
 export const vestingABI = [
 	{
 		"inputs": [],

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.28;
 
-contract HyperHausContract {
+contract HyperHaus {
 
     uint public vested;
 
@@ -322,7 +322,7 @@ contract HyperHausContract {
         }
 
         function vestingCancelled(address _guildMember, bytes32 _guildId) external payable returns(bool){
-                uint256 _memberIndex;
+                // uint256 _memberIndex;
                 for(uint8 c=0; c < guilds[_guildId].memberAddresses.length; c++){
                     if(guilds[_guildId].memberAddresses[c] == _guildMember){
                          
