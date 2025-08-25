@@ -637,7 +637,6 @@ export const fetchGuildData = createAsyncThunk(
           args: [guildId],
         });
 
-        // Serialize BigInt values in guildData[0] (guild) and guildData[1] (proposals)
         const serializedGuild = {
           ...guildData[0],
           createdAt: guildData[0].createdAt
