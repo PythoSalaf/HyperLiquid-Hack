@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
-
+pragma solidity ^0.8.28;
 
 contract HyperHausVesting {
 
-    uint256 public constant MAX_VESTING_DURATION = 300; 
-    uint256 public constant WEEK = 30;
-    // uint256 public constant MAX_VESTING_DURATION = 31536000; 
-    // uint256 public constant WEEK = 604800;
+    
+    uint256 public constant MAX_VESTING_DURATION = 31536000; 
+    uint256 public constant WEEK = 604800;
 
     uint256 public currentCycleStart;
 
