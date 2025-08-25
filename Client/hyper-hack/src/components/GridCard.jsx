@@ -34,10 +34,7 @@ const GridCard = ({ id, name, description, entryPoint, members }) => {
             </div>
           </div>
         </div>
-        <div className="w-full py-1 flex items-center gap-3">
-          <button className="bg-[#6d8cff] cursor-pointer w-full py-1 text-sm md:text-base font-semibold rounded-lg text-[#081423]">
-            Join Guild
-          </button>
+        <div className="w-full py-1 ">
           <button
             className="bg-[#6d8cff] cursor-pointer w-full py-1 text-sm md:text-base font-semibold rounded-lg text-[#081423]"
             onClick={() => navigate(`/dashboard/guilds/${id}`)}

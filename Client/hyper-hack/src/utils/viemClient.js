@@ -25,3 +25,5 @@ export const walletClient = async (wallet) => {
     throw new Error("Failed to initialize walletClient");
   }
 };
+
+// export const contractAddress = "0x7323ad85BFc66b199C13dBD292C49d10052688d2"
