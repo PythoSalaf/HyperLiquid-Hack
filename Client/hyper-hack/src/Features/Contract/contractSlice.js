@@ -536,14 +536,18 @@
 // export default contractSlice.reducer;
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { publicClient, walletClient } from "../../utils/viemClient";
+import {
+  hyperEvmTestnet,
+  publicClient,
+  walletClient,
+} from "../../utils/viemClient";
 import { contractABI, contractAddress } from "../../components/contractConfig";
 import { createWalletClient, custom } from "viem";
-import { sepolia } from "viem/chains";
+// import { sepolia } from "viem/chains";
 import { entryThresholdeth } from "../../utils/formatters";
 
 const Wallet_Client_2 = createWalletClient({
-  chain: sepolia,
+  chain: hyperEvmTestnet,
   transport: custom(window.ethereum),
 });
 
