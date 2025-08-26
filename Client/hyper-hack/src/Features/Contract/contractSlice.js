@@ -716,8 +716,8 @@ export const createGuild = createAsyncThunk(
         entryThreshold,
         riskThreshold,
       });
-      const walletClientInstance = walletClient(wallet);
-      const request = await Wallet_Client_2.prepareWriteContract({
+      // const walletClientInstance = walletClient(wallet);
+      const hash = await Wallet_Client_2.writeContract({
         address: contractAddress,
         abi: contractABI,
         functionName: "createGuild",
@@ -733,7 +733,7 @@ export const createGuild = createAsyncThunk(
         value: entryThreshold,
       });
 
-      const hash = await walletClientInstance.writeContract(request);
+      // const hash = await Wallet_Client_2.writeContract(request);
       console.log("Transaction hash:", hash);
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
       console.log("Transaction receipt:", receipt);
@@ -765,8 +765,8 @@ export const joinGuild = createAsyncThunk(
         memberName,
         entryThreshold,
       });
-      const walletClientInstance = walletClient(wallet);
-      const request = await Wallet_Client_2.prepareWriteContract({
+      // const walletClientInstance = walletClient(wallet);
+      const hash = await Wallet_Client_2.writeContract({
         address: contractAddress,
         abi: contractABI,
         functionName: "joinGuild",
@@ -775,7 +775,7 @@ export const joinGuild = createAsyncThunk(
         value: entryThreshold,
       });
 
-      const hash = await walletClientInstance.writeContract(request);
+      // const hash = await Wallet_Client_2.writeContract(request);
       console.log("Transaction hash:", hash);
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
       console.log("Transaction receipt:", receipt);
@@ -808,7 +808,7 @@ export const proposeTrade = createAsyncThunk(
         description,
       });
 
-      const request = await Wallet_Client_2.prepareWriteContract({
+      const hash = await Wallet_Client_2.writeContract({
         address: contractAddress,
         abi: contractABI,
         functionName: "proposeTrade",
@@ -816,7 +816,7 @@ export const proposeTrade = createAsyncThunk(
         account: auth.address,
       });
 
-      const hash = await Wallet_Client_2.writeContract(request);
+      // const hash = await Wallet_Client_2.writeContract(request);
       console.log("Transaction hash:", hash);
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
       console.log("Transaction receipt:", receipt);
@@ -871,7 +871,7 @@ export const topUpStake = createAsyncThunk(
 
       console.log("Topping up stake with params:", { guildId, amount });
 
-      const request = await Wallet_Client_2.prepareWriteContract({
+      const hash = await Wallet_Client_2.writeContract({
         address: contractAddress,
         abi: contractABI,
         functionName: "topUpStake",
@@ -880,7 +880,7 @@ export const topUpStake = createAsyncThunk(
         value: amount,
       });
 
-      const hash = await Wallet_Client_2.writeContract(request);
+      // const hash = await Wallet_Client_2.writeContract(request);
       console.log("Transaction hash:", hash);
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
       console.log("Transaction receipt:", receipt);
@@ -913,7 +913,7 @@ export const voteProposal = createAsyncThunk(
         voteYes,
       });
 
-      const request = await Wallet_Client_2.prepareWriteContract({
+      const hash = await Wallet_Client_2.writeContract({
         address: contractAddress,
         abi: contractABI,
         functionName: "voteProposal",
@@ -921,7 +921,7 @@ export const voteProposal = createAsyncThunk(
         account: auth.address,
       });
 
-      const hash = await Wallet_Client_2.writeContract(request);
+      // const hash = await Wallet_Client_2.writeContract(request);
       console.log("Transaction hash:", hash);
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
       console.log("Transaction receipt:", receipt);
@@ -963,7 +963,7 @@ export const executeProposal = createAsyncThunk(
 
       console.log("Executing proposal with params:", { proposalId });
 
-      const request = await Wallet_Client_2.prepareWriteContract({
+      const hash = await Wallet_Client_2.writeContract({
         address: contractAddress,
         abi: contractABI,
         functionName: "executeProposal",
@@ -971,7 +971,7 @@ export const executeProposal = createAsyncThunk(
         account: auth.address,
       });
 
-      const hash = await Wallet_Client_2.writeContract(request);
+      // const hash = await Wallet_Client_2.writeContract(request);
       console.log("Transaction hash:", hash);
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
       console.log("Transaction receipt:", receipt);

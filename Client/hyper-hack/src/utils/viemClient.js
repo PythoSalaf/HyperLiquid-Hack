@@ -39,16 +39,15 @@ import {
 // Define Hyper EVM Testnet chain
 export const hyperEvmTestnet = defineChain({
   id: 998,
-  name: "Hyper EVM Testnet",
-  network: "hyper-evm-testnet",
+  name: "HyperEVM Testnet",
   nativeCurrency: {
-    name: "Testnet Hyper",
+    name: "HyperEVM Testnet",
     symbol: "HYPE",
     decimals: 18,
   },
   rpcUrls: {
     default: {
-      http: ["https://rpc.hyperliquid-testnet.xyz/evm"], // Replace with actual RPC URL
+      http: ["https://api.hyperliquid-testnet.xyz/evm"], // Replace with actual RPC URL
     },
     public: {
       http: ["https://rpc.hyperliquid-testnet.xyz/evm"], // Replace with actual RPC URL
@@ -56,8 +55,8 @@ export const hyperEvmTestnet = defineChain({
   },
   blockExplorers: {
     default: {
-      name: "Hyper EVM Explorer",
-      url: "https://explorer.hyper-evm-testnet.example.com", // Replace with actual explorer URL, if available
+      name: "HyperEVM Explorer",
+      url: "https://purrsec.com/", // Replace with actual explorer URL, if available
     },
   },
   testnet: true,
@@ -76,7 +75,7 @@ export const publicClient = createPublicClient({
 export const walletClient = async (wallet) => {
   try {
     const provider = await wallet.getEthereumProvider();
-    console.log("Privy provider available:", !!provider);
+    console.log("Privy provider available:", provider);
 
     // Optionally, switch the wallet to Hyper EVM Testnet
     try {
@@ -94,13 +93,13 @@ export const walletClient = async (wallet) => {
               chainId: `0x${(998).toString(16)}`,
               chainName: "Hyper EVM Testnet",
               nativeCurrency: {
-                name: "Testnet Hyper",
-                symbol: "THYP",
+                name: "HyperEVM Testnet",
+                symbol: "HYPE",
                 decimals: 18,
               },
               rpcUrls: [RPC_URL],
               blockExplorerUrls: [
-                "https://explorer.hyper-evm-testnet.example.com",
+                "https://purrsec.com/",
               ], // Replace with actual explorer URL
             },
           ],
@@ -113,8 +112,9 @@ export const walletClient = async (wallet) => {
     const client = createWalletClient({
       chain: hyperEvmTestnet,
       transport: custom(provider),
-      account: wallet.address,
+      account:wallet
     });
+
     console.log("WalletClient created with account:", client.account.address);
     return client;
   } catch (error) {
