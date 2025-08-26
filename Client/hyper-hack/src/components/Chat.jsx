@@ -360,9 +360,9 @@ const Chat = ({
     } else if (action === "vote") {
       onVoteProposal(proposalId);
     } else if (action === "execute") {
-      if (window.confirm("Execute this trade proposal?")) {
+      // if (window.confirm("Execute this trade proposal?")) {
         onExecuteProposal(proposalId);
-      }
+      // }
     }
   };
 

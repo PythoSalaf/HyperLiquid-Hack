@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { publicClient } from "../utils/viemClient";
 import { entryThresholdeth } from "../utils/formatters";
+import {formatEther} from 'ethers'
 
 const JoinGuildModal = ({
   isOpen,
@@ -27,7 +28,7 @@ const JoinGuildModal = ({
         address: window.ethereum.selectedAddress,
       });
       const gasEstimate = BigInt(100000) * BigInt(20000000000); // ~100k gas * 20 gwei
-      const totalCost = entryThreshold + gasEstimate;
+      const totalCost = entryThreshold + formatEther(gasEstimate);
       console.log(
         "Wallet balance:",
         balance.toString(),
@@ -38,7 +39,7 @@ const JoinGuildModal = ({
         setFormError(
           `Insufficient funds: need ~${Number(totalCost) / 1e18} ETH, have ${
             Number(balance) / 1e18
-          } ETH`
+          } HYPE`
         );
         setIsLoading(false);
         return;

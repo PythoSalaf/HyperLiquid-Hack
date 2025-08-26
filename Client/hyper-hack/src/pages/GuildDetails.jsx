@@ -834,12 +834,12 @@ const TopUpStakeModal = ({ isOpen, onClose, onTopUp, guildId }) => {
           <div className="text-red-500 text-sm mb-4">{formError}</div>
         )}
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Amount (ETH)</label>
+          <label className="block text-sm font-medium mb-1">Amount (HYPE)</label>
           <input
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            placeholder="Enter amount in ETH"
+            placeholder="Enter amount in HYPE"
             className="w-full border border-[#dadada] rounded-lg px-3 py-2 outline-none"
           />
         </div>
@@ -1068,8 +1068,8 @@ const GuildDetails = () => {
       setIsJoinModalOpen(false);
       dispatch(fetchGuildData([guildId]));
     } catch (error) {
-      console.error("Failed to join guild:", error);
-      setFormError(error.message || "Failed to join guild");
+      // console.error("Failed to join guild:", error);
+      // setFormError(error.message || "Failed to join guild");
     }
   };
 
@@ -1317,7 +1317,7 @@ const GuildDetails = () => {
             <div className="flex items-center justify-between py-3">
               <h4 className="text-sm">Pool:</h4>
               <div className="bg-[#1e2a46] rounded-lg py-1 px-4 text-sm md:text-base font-semibold">
-                {guild.pool ? entryThresholdeth(guild.pool) : "0"} ETH
+                {guild.pool ? entryThresholdeth(guild.pool) : "0"} HYPE
               </div>
             </div>
             <div className="flex items-center justify-between py-3">
@@ -1391,7 +1391,7 @@ const GuildDetails = () => {
                       {guild.memberStakes[index]
                         ? entryThresholdeth(guild.memberStakes[index])
                         : "0"}{" "}
-                      ETH
+                      HYPE
                     </td>
                     <td className="py-2 text-sm md:text-base">
                       {guild.memberCap ? guild.memberCap.toString() : "0"}
